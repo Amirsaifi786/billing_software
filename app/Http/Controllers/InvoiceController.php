@@ -34,11 +34,17 @@ class InvoiceController extends Controller
     {
         
         $customers=Customer::with('invoices')->get();
-        $products=Product::all();
+        $allProducts=Product::all();
         $countries=DB::table('countries')->get();
         // dd($customers);
-    return view('invoice.create',compact('customers','countries','products'));
+    return view('invoice.create',compact('customers','countries','allProducts'));
     }
+    public function getProduct($id)
+    {    
+    $product = Product::find($id);
+    return response()->json($product);
+    }
+
 
     /**
      * Store a newly created resource in storage.
@@ -72,62 +78,134 @@ class InvoiceController extends Controller
 
 
     // }
-    public function Store(Request $request)
-{
+//     public function Store(Request $request)
+// {
 
-    // dd($request->all());
+//     dd($request->all());
+//     $lastInvoice = Invoice::orderBy('id', 'desc')->first();
+    
+//     if ($lastInvoice) {
+//         $lastNumber = intval(substr($lastInvoice->invoice_no, -3)); // Get the last 3 digits
+//         $newInvoiceNo = 'INV-' . str_pad($lastNumber + 1, 3, '0', STR_PAD_LEFT);
+//     } else {
+//        $newInvoiceNo = 'INV-001';
+//     }
+
+//     // Validate invoice data
+//     $validated = $request->validate([
+//         'customer_id' => 'required',
+//         'invoice_date' => 'required|date',
+//         // Add other invoice fields validation
+//     ]);
+
+//     // Create the invoice
+//     $invoice = new Invoice();
+//     $invoice->customer_id = $validated['customer_id'];
+//     $invoice->invoice_no = $newInvoiceNo;
+//     $invoice->invoice_date = $validated['invoice_date'];
+//     $invoice->save();
+
+//     // Handle products
+//     $products = json_decode($request->input('products'), true);
+    
+//     foreach ($products as $product) {
+//         $invoiceProduct = new InvoiceProduct();
+//         $invoiceProduct->invoice_id = $invoice->id;
+//         // $invoiceProduct->id = $product['id'];
+//         $invoiceProduct->name = $product['name'];
+//         $invoiceProduct->price = $product['price'];
+//         $invoiceProduct->stock = $product['stock'];
+//         $invoiceProduct->tax = $product['tax'];
+//         $invoiceProduct->total = $product['total'];
+//         $invoiceProduct->save();
+//     }
+
+//     return redirect()->route('invoiceIndex')->with('success', 'Invoice saved successfully');
+// }
+public function Store(Request $request)
+{
+    // Generate a new invoice number
     $lastInvoice = Invoice::orderBy('id', 'desc')->first();
     
     if ($lastInvoice) {
         $lastNumber = intval(substr($lastInvoice->invoice_no, -3)); // Get the last 3 digits
         $newInvoiceNo = 'INV-' . str_pad($lastNumber + 1, 3, '0', STR_PAD_LEFT);
     } else {
-       $newInvoiceNo = 'INV-001';
+        $newInvoiceNo = 'INV-001';
     }
 
     // Validate invoice data
     $validated = $request->validate([
         'customer_id' => 'required',
         'invoice_date' => 'required|date',
-        // Add other invoice fields validation
     ]);
 
-    // Create the invoice
+    // Initialize total amount and total GST
+    $totalAmount = 0;
+    $totalGST = 0;
+
+    // Handle products
+    $productIds = $request->input('product_id'); // Array of product IDs
+    $prices = $request->input('price'); // Array of prices
+    $stocks = $request->input('stock'); // Array of stocks
+    $taxes = $request->input('tax'); // Array of taxes
+    $totals = $request->input('total'); // Array of totals
+    $names = $request->input('name'); // Array of names
+    $discountPrices = $request->input('discountprice'); // Array of discount prices
+
+    // Create the invoice first and save it to get its ID
     $invoice = new Invoice();
     $invoice->customer_id = $validated['customer_id'];
     $invoice->invoice_no = $newInvoiceNo;
     $invoice->invoice_date = $validated['invoice_date'];
-    $invoice->save();
+    // We'll calculate total_amount and total_gst later
+    $invoice->save(); // Save the invoice to generate its ID
 
-    // Handle products
-    $products = json_decode($request->input('products'), true);
-    
-    foreach ($products as $product) {
+    // Loop through the products and create invoice products
+    for ($i = 0; $i < count($productIds); $i++) {
         $invoiceProduct = new InvoiceProduct();
-        $invoiceProduct->invoice_id = $invoice->id;
-        // $invoiceProduct->id = $product['id'];
-        $invoiceProduct->name = $product['name'];
-        $invoiceProduct->price = $product['price'];
-        $invoiceProduct->stock = $product['stock'];
-        $invoiceProduct->tax = $product['tax'];
-        $invoiceProduct->total = $product['total'];
+        $invoiceProduct->invoice_id = $invoice->id; // Now the invoice ID is available
+        $invoiceProduct->product_id = $productIds[$i];
+        $invoiceProduct->name = $names[$i];
+        $invoiceProduct->price = $prices[$i];
+        $invoiceProduct->stock = $stocks[$i];
+        $invoiceProduct->tax = $taxes[$i];
+        $invoiceProduct->discountprice = $discountPrices[$i];
+        $invoiceProduct->total = $totals[$i];
         $invoiceProduct->save();
+
+        // Accumulate total amount and total GST
+        $totalAmount += $totals[$i]; // Sum of all product totals
+        $totalGST += ($prices[$i] * $stocks[$i]) * ($taxes[$i] / 100); // Calculate GST for each product and sum it up
     }
 
+    // Update the invoice with total amount and total GST
+    $invoice->total_gst = $totalGST; // Save total GST
+    $invoice->total_amount = $totalAmount; // Save total amount
+    $invoice->save(); // Update the invoice with these values
+
+    // Redirect back with success message
     return redirect()->route('invoiceIndex')->with('success', 'Invoice saved successfully');
 }
+
+
 public function downloadInvoice($id)
 {
+    // Fetch the invoice data from the database
+    $invoiceProducts = InvoiceProduct::where('invoice_id', $id)->get(); // Get related products for the invoice
+    $invoices = Invoice::findOrFail($id); // Fetch the invoice by id, throw 404 if not found
+    $customer = Customer::where('id', $invoices->customer_id)->get() ;// Fetch the invoice by id, throw 404 if not found
 
-    // Fetch invoice data from the database
-    $invoice = InvoiceProduct::where('invoice_id' ,$id)->get(); // Assuming relation with products
+    // Load the view and pass the invoice and product data
+    $pdf = PDF::loadView('invoice.pdf', compact('invoices', 'invoiceProducts','customer'));
 
-    // Load view and pass the invoice data
-    $pdf = PDF::loadView('invoice.pdf', compact('invoice'));
-
+    // Generate the PDF filename using the invoice number
+    $fileName = 'invoice_' . $invoices->invoice_no . '.pdf';
+    return $pdf->stream($fileName);
     // Download the generated PDF
-    return $pdf->download('invoice_'.$invoice->id.'.pdf');
+    // return $pdf->download($fileName);
 }
+
 
 
     public function show(Invoice $invoice)

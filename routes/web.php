@@ -72,7 +72,9 @@ Route::group(['middleware' => ['auth']], function() {
         Invoice::onlyTrashed()->restore();
         return redirect()->back()->with('success', 'All invoice have been restored.');
     })->name('invoice.restoreAll');
-    
+
+  Route::get('/get-product/{id}', [InvoiceController::class, 'getProduct'])->name('getProduct'); // For AJAX
+
 
     
     Route::get('/customer/restore', [CustomerController::class, 'restoreAll'])->name('customers.restoreAll');

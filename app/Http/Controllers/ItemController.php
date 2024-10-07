@@ -19,7 +19,7 @@ class ItemController extends Controller
 
     public function create()
     {
-        // $items=Item::all();
+
         return view('item.create');
 
     }
@@ -43,6 +43,7 @@ class ItemController extends Controller
         'stock' => $request->stock,
         'description' => $request->description,
         'price' => $request->price,
+        'gst' => $request->gst,
         'total' => $request->total,
         'barcode_image_path' => 'storage/barcodes/' . $barcode . '.png'
     ]);
@@ -78,14 +79,15 @@ class ItemController extends Controller
         $item = Product::find($id);
     
         // Validate the request data
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'description' => 'required|string|max:255',
-            'type' => 'required|in:goods,services',
-            'barcode' => 'required|string|max:255|unique:items,barcode,' . $id,
-            'stock' => 'required|integer|min:1',
-            'price' => 'required|numeric|min:0',
-        ]);
+        // $request->validate([
+        //     'name' => 'required|string|max:255',
+        //     'description' => 'required|string|max:255',
+        //     'type' => 'required|in:goods,services',
+        //     'barcode' => 'required|string|max:255|unique:items,barcode,' . $id,
+        //     'stock' => 'required|integer|min:1',
+        //     'price' => 'required|numeric|min:0',
+        //     // 'gst' => 'required',
+        // ]);
     
         // Generate barcode PNG using instance of DNS1D
         $barcode = $request->input('barcode');

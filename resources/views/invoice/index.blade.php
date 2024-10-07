@@ -129,13 +129,15 @@
                 </th>
                 <th>Id</th>
                 <th>Customer Id</th>
-                <th>Product Id</th>
-                <th>invoice No </th>
+                <th>invoice No </th> 
+                <th>invoice Date </th> 
+                
+                {{-- <th>Product Id</th>
                 <th>Invoice Date</th>
-                <th>Price</th>
+                {{-- <th>Price</th>
                 <th>Quantity </th>
                 <th>Discount Type</th>
-                <th>Total Amount</th>
+                <th>Total Amount</th> --}}
                 {{--
 
                             <th>Zip_code</th>
@@ -164,14 +166,14 @@
 
                 <td>{{ $key+1  }}</td>
                 <td>{{ $invoice->customer_id }}</td>
-                <td>{{ $invoice->product_id }}</td>
                 <td>{{ $invoice->invoice_no }}</td>
-
                 <td>{{ $invoice->invoice_date }}</td>
+                {{-- <td>{{ $invoice->product_id }}</td>
+
                 <td>{{ $invoice->price }}</td>
                 <td>{{ $invoice->quantity }}</td>
                 <td>{{ $invoice->discount_type }}%</td>
-                <td>{{ $invoice->total_amount }}</td>
+                <td>{{ $invoice->total_amount }}</td> --}}
                 {{-- <td>{{ $invoice->due_date }}</td> --}}
 
 

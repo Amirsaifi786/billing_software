@@ -154,52 +154,71 @@
                   });
               });
     </script>
-    <script>
-  $(document).ready(function() {
-    // Add new product row
-    $('#addProductRow').click(function() {
-        $('#productTable tbody').append(`
-            <tr>
-                <td><input type="text" class="form-control" name="name[]" placeholder="Product Name"></td>
-                <td><input type="number" class="form-control" name="price[]" placeholder="Price"></td>
-                <td><input type="number" class="form-control" name="stock[]" placeholder="Stock"></td>
-                <td>
-                    <select class="form-select" name="tax[]">
-                        <option value="5">GST 5%</option>
-                        <option value="12">GST 12%</option>
-                        <option value="18">GST 18%</option>
-                    </select>
-                </td>
-                <td><input type="number" class="form-control" name="total[]" placeholder="Total"></td>
-                <td><button type="button" class="btn btn-danger btn-sm removeRow">x</button></td>
-            </tr>
-        `);
+
+<script>
+
+
+// Function to add event listeners to a row
+function addEventListenersToRow(row) {
+    row.querySelector('.product-select').addEventListener('change', function(e) {
+        let productId = e.target.value;
+        let fetchUrl = getProductUrl.replace(':id', productId);
+        fetch(fetchUrl)
+            .then(response => response.json())
+            .then(product => {
+                row.querySelector('.stock-input').removeAttribute('readonly');
+                row.querySelector('.stock-input').value = product.stock; // Set default stock
+
+                row.querySelector('.price-input').removeAttribute('readonly');
+                row.querySelector('.price-input').value = product.price;
+                row.querySelector('.name-input').value = product.name;
+             
+
+                   if (product.gst) {
+                row.querySelector('.tax-input').removeAttribute('readonly');
+                        row.querySelector('.tax-input').value = product.gst;
+                    }
+
+                calculateTotal(row); // Calculate total when product is selected
+            });
     });
 
-    // Remove product row
-    $(document).on('click', '.removeRow', function() {
-        $(this).closest('tr').remove();
+    // Event listeners for price, stock, and tax
+    row.querySelector('.price-input').addEventListener('input', function() {
+        calculateTotal(row);
     });
 
-    // Save products and append to hidden field in invoice form
-    $('#saveProduct').click(function() {
-        let products = [];
-        $('#productTable tbody tr').each(function() {
-            let product = {
-                name: $(this).find('input[name="name[]"]').val(),
-                price: $(this).find('input[name="price[]"]').val(),
-                stock: $(this).find('input[name="stock[]"]').val(),
-                tax: $(this).find('select[name="tax[]"]').val(),
-                total: $(this).find('input[name="total[]"]').val()
-            };
-            products.push(product);
-        });
-        // Store products as JSON string in the hidden input field
-        $('#productsInput').val(JSON.stringify(products));
-        $('#productModal').modal('hide');
+    row.querySelector('.stock-input').addEventListener('input', function() {
+        calculateTotal(row);
     });
+
+    row.querySelector('.tax-input').addEventListener('change', function() {
+        calculateTotal(row);
+    });
+}
+
+// Remove row
+document.querySelector('#productTable').addEventListener('click', function(e) {
+    if (e.target && e.target.classList.contains('removeRow')) {
+        e.target.closest('tr').remove();
+    }
 });
 
+// Calculate total based on price, stock, and tax
+function calculateTotal(row) {
+    let price = parseFloat(row.querySelector('.price-input').value) || 0;
+    let stock = parseFloat(row.querySelector('.stock-input').value) || 0;
+    let tax = parseFloat(row.querySelector('.tax-input').value) || 0;
+
+    let subtotal = price * stock;
+    let total = subtotal + (subtotal * (tax / 100));
+    let discount=subtotal * (tax / 100)
+    row.querySelector('.total-input').value = total.toFixed(2);
+    row.querySelector('.discountprice-input').value = discount.toFixed(2);
+}
+
 </script>
+
+
 </body>
 </html>

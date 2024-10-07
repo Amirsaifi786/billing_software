@@ -3,7 +3,7 @@
 <div class="content">
     <div class="page-header">
         <div class="page-title">
-            <h4>item  Management</h4>
+            <h4>item Management</h4>
             <h6>Add/Update item </h6>
         </div>
     </div>
@@ -42,7 +42,6 @@
                             </div>
                         </div>
 
-
                         <div class="col-lg-3 col-sm-6 col-12">
                             <div class="form-group">
                                 <label for="price">Price<span class="text-danger">*</span></label>
@@ -57,6 +56,53 @@
                             </div>
                         </div>
 
+                        <div class="col-lg-3 col-sm-6 col-12">
+                            <div class="form-group">
+                                <label for="gst">GST Type<span class="text-danger">*</span></label>
+                                <select name="gst" class="form-control" id="gst" required>
+                                    <option disabled selected>Select GST</option>
+                                    <option value="5">5%</option>
+                                    <option value="8">8%</option>
+                                    <option value="12">12%</option>
+                                    <option value="18">18%</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-3 col-sm-6 col-12">
+                            <div class="form-group">
+                                <label for="total">Total<span class="text-danger">*</span></label>
+                                <input type="number" name="total" class="form-control" id="total" readonly>
+                            </div>
+                        </div>
+
+
+                        {{-- <div class="col-lg-3 col-sm-6 col-12">
+                            <div class="form-group">
+                                <label for="price">Price<span class="text-danger">*</span></label>
+                                <input type="number" name="price" class="form-control" id="price" required step="0.01">
+                            </div>
+                        </div>
+
+                        <div class="col-lg-3 col-sm-6 col-12">
+                            <div class="form-group">
+                                <label for="stock">Stock<span class="text-danger">*</span></label>
+                                <input type="number" name="stock" class="form-control" id="stock" required min="1">
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-sm-6 col-12">
+                            <div class="form-group">
+                                <label for="type">Discount Type<span class="text-danger">*</span></label>
+                                <select name="type" class="form-control" id="type" required>
+                                    <option disabled selected>Select Gst</option>
+                                    <option value="5">5%</option>
+                                    <option value="8">8%</option>
+                                    <option value="12">12%</option>
+                                    <option value="18">18%</option>
+                                </select>
+                            </div>
+                        </div>
+
 
                         <div class="col-lg-3 col-sm-6 col-12">
 
@@ -64,12 +110,12 @@
                                 <label for="total">Total<span class="text-danger">*</span></label>
                                 <input type="number" name="total" class="form-control" id="total" readonly>
                             </div>
-                        </div>
+                        </div> --}}
 
                         <div class="col-lg-3 col-sm-6 col-12">
                             <div class="form-group">
                                 <label for="barcode">Barcode<span class="text-danger">*</span></label>
-                                <input type="text" name="barcode" class="form-control" id="barcode"  readonly>
+                                <input type="text" name="barcode" class="form-control" id="barcode" readonly>
                             </div>
                         </div>
 
@@ -95,14 +141,23 @@
 </div>
 
 <script>
-    document.getElementById('stock').addEventListener('input', calculateTotal);
-    document.getElementById('price').addEventListener('input', calculateTotal);
-
     function calculateTotal() {
-        const quantity = document.getElementById('stock').value || 0;
-        const price = document.getElementById('price').value || 0;
-        document.getElementById('total').value = (quantity * price).toFixed(2);
+        const price = parseFloat(document.getElementById('price').value) || 0;
+        const stock = parseInt(document.getElementById('stock').value) || 0;
+        const gst = parseInt(document.getElementById('gst').value) || 0;
+
+        if (price > 0 && stock > 0) {
+            const subtotal = price * stock;
+            const total = subtotal + (subtotal * (gst / 100));
+            document.getElementById('total').value = total.toFixed(2); // Display total with two decimal points
+        }
     }
+
+    // Event listeners to trigger the calculation
+    document.getElementById('price').addEventListener('input', calculateTotal);
+    document.getElementById('stock').addEventListener('input', calculateTotal);
+    document.getElementById('gst').addEventListener('change', calculateTotal);
+
     function generateBarcode() {
         // Get the value of the product name
         var productName = document.getElementById("name").value;
@@ -113,5 +168,6 @@
         // Set the barcode field's value
         document.getElementById("barcode").value = barcode;
     }
+
 </script>
 @endsection

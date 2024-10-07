@@ -16,14 +16,18 @@
     <div class="heading">
         <h1>Tax Invoice</h1>
         {{-- <h4>{{ $invoice->company_name }}</h4> --}}
-        {{-- <p>Phone: {{ $invoice->company_phone }}</p> --}}
+        <p>Phone: {{ $customer->first()->mobile_no }}</p>
     </div>
 
     <div>
-        {{-- <strong>Bill To:</strong> {{ $invoice->customer_name }} <br> --}}
-        @dd($invoice)
-        <strong>Invoice No:</strong> {{ $invoice->invoice_id }} <br>
-        {{-- <strong>Date:</strong> {{ $invoice->invoice_date->format('d-m-Y') }} <br> --}}
+
+
+<strong>Bill To:</strong> {{  ucwords($customer->first()->name) }} <br>
+<strong>Invoices No:</strong> {{ $invoices->invoice_no }} <br>
+
+        {{-- <strong>Bill To:</strong> {{ $inv->customer_id }} <br>
+        {{-- @dd($invoice) --}}
+
     </div>
 
     <table>
@@ -40,32 +44,33 @@
         </thead>
         <tbody>
           
-            @foreach ($invoice as $key=> $product)
+            @foreach ($invoiceProducts as $key=> $product)
                 <tr>
-             
+          
                     <td>{{ $key+1 }}</td>
                     <td>{{ $product->name }}</td>
                     <td>{{ $product->hsn_sac }}</td>
-                    <td>{{ $product->pivot->quantity }}</td>
-                    <td>{{ number_format($product->pivot->price, 2) }}</td>
-                    <td>{{ number_format($product->pivot->tax, 2) }}</td>
-                    <td>{{ number_format($product->pivot->total, 2) }}</td>
+                    <td>{{ $product->stock }}</td>
+                    <td>{{ number_format($product->price, 2) }}</td>
+                    <td>{{ number_format($product->tax, 2) }}</td>
+                    <td>{{ number_format($product->total, 2) }}</td>
                 </tr>
             @endforeach 
         </tbody>
         <tfoot>
+           
             <tr class="total-row">
                 <td colspan="6" style="text-align:right;">Subtotal</td>
-                <td>{{ number_format($invoice->total_amount, 2) }}</td>
+                <td>{{ number_format($invoices->total_amount, 2) }}</td>
             </tr>
             <tr class="total-row">
                 <td colspan="6" style="text-align:right;">GST</td>
-                <td>{{ number_format($invoice->total_gst, 2) }}</td>
+                <td>{{ number_format($invoices->total_gst, 2) }}</td>
             </tr>
-            <tr class="total-row">
+            {{-- <tr class="total-row">
                 <td colspan="6" style="text-align:right;">Total</td>
                 <td>{{ number_format($invoice->total_amount_with_gst, 2) }}</td>
-            </tr>
+            </tr> --}}
         </tfoot>
     </table>
 
