@@ -3,8 +3,8 @@
 <div class="content">
     <div class="page-header">
         <div class="page-title">
-            <h4>item Management</h4>
-            <h6>Add/Update item </h6>
+            <h4>Product Management</h4>
+            <h6>Add Product </h6>
         </div>
     </div>
 

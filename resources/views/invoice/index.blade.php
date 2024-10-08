@@ -63,82 +63,34 @@
                 <div class="card-body pb-0">
                     <div class="row">
                         <div class="col-lg-12 col-sm-12">
-                            {{-- <div class="row">
-                                <div class="col-lg col-sm-6 col-12">
-                                    <div class="form-group">
-                                        <select class="select">
-                                            <option>Choose invoice</option>
-                                            <option>Macbook pro</option>
-                                            <option>Orange</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="col-lg col-sm-6 col-12">
-                                    <div class="form-group">
-                                        <select class="select">
-                                            <option>Choose Category</option>
-                                            <option>Computers</option>
-                                            <option>Fruits</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="col-lg col-sm-6 col-12">
-                                    <div class="form-group">
-                                        <select class="select">
-                                            <option>Choose Sub Category</option>
-                                            <option>Computer</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="col-lg col-sm-6 col-12">
-                                    <div class="form-group">
-                                        <select class="select">
-                                            <option>Brand</option>
-                                            <option>N/D</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="col-lg col-sm-6 col-12 ">
-                                    <div class="form-group">
-                                        <select class="select">
-                                            <option>Price</option>
-                                            <option>150.00</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="col-lg-1 col-sm-6 col-12">
-                                    <div class="form-group">
-                                        <a class="btn btn-filters ms-auto"><img src="{{ asset('assets/img/icons/search-whites.svg')}}" alt="img"></a>
+                          
                         </div>
                     </div>
-                </div> --}}
+                </div>
             </div>
-        </div>
-    </div>
-</div>
 
-<div class="table-responsive">
-    <table class="table  datanew">
-        <thead>
-            <tr>
-                <th>
-                    <label class="checkboxs">
-                        <input type="checkbox" id="select-all">
-                        <span class="checkmarks"></span>
-                    </label>
-                </th>
-                <th>Id</th>
-                <th>Customer Id</th>
-                <th>invoice No </th> 
-                <th>invoice Date </th> 
-                
-                {{-- <th>Product Id</th>
-                <th>Invoice Date</th>
+            <div class="table-responsive">
+                <table class="table  datanew">
+                    <thead>
+                        <tr>
+                            <th>
+                                <label class="checkboxs">
+                                    <input type="checkbox" id="select-all">
+                                    <span class="checkmarks"></span>
+                                </label>
+                            </th>
+                            <th>Id</th>
+                            <th>Customer Id</th>
+                            <th>Invoice No </th>
+                            <th>Invoice Date </th>
+                            <th>Invoice total </th>
+
+                            {{-- <th>Product Id</th>
                 {{-- <th>Price</th>
                 <th>Quantity </th>
                 <th>Discount Type</th>
                 <th>Total Amount</th> --}}
-                {{--
+                            {{--
 
                             <th>Zip_code</th>
                             <th>Tax_identification_no</th>
@@ -148,63 +100,65 @@
                             <th>Credit_allowed</th>
                             <th>Remark</th>
                             <th>Avatar</th> --}}
-                <th>Action</th>
+                            <th>Action</th>
 
-            </tr>
-        </thead>
-        <tbody>
-            @foreach($invoices as $key => $invoice)
-
-
-            <tr>
-                <td>
-                    <label class="checkboxs">
-                        <input type="checkbox">
-                        <span class="checkmarks"></span>
-                    </label>
-                </td>
-
-                <td>{{ $key+1  }}</td>
-                <td>{{ $invoice->customer_id }}</td>
-                <td>{{ $invoice->invoice_no }}</td>
-                <td>{{ $invoice->invoice_date }}</td>
-                {{-- <td>{{ $invoice->product_id }}</td>
-
-                <td>{{ $invoice->price }}</td>
-                <td>{{ $invoice->quantity }}</td>
-                <td>{{ $invoice->discount_type }}%</td>
-                <td>{{ $invoice->total_amount }}</td> --}}
-                {{-- <td>{{ $invoice->due_date }}</td> --}}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach($invoices as $key => $invoice)
 
 
-                <td>
-                    {{-- <a class="me-3" href="{{ route('invoiceUpdate',$invoice->id) }}">
-                    <img src="{{ asset('assets/img/icons/eye.svg')}}" alt="img">
-                    </a> --}}
-                    {{-- @can('invoice edit') --}}
-                    <a href="{{ route('invoice.download', $invoice->id) }}" class="btn btn-primary">Download Invoice as PDF</a>
+                        <tr>
+                            <td>
+                                <label class="checkboxs">
+                                    <input type="checkbox">
+                                    <span class="checkmarks"></span>
+                                </label>
+                            </td>
 
-                    <a class="me-3" href="{{ route('invoiceEdit',$invoice->id) }}">
-                        <img src="{{ asset('assets/img/icons/edit.svg')}}" alt="img">
-                    </a>
-                    {{-- @endcan 
+                            <td>{{ $key+1  }}</td>
+                            <td>{{ $invoice->customer_id }}</td>
+                            <td>{{ $invoice->invoice_no }}</td>
+                            <td>{{ $invoice->invoice_date }}</td>
+                            <td>{{ $invoice->total_amount }}</td>
+                            {{-- <td>{{ $invoice->product_id }}</td>
+
+                            <td>{{ $invoice->price }}</td>
+                            <td>{{ $invoice->quantity }}</td>
+                            <td>{{ $invoice->discount_type }}%</td>
+                            <td>{{ $invoice->total_amount }}</td> --}}
+                            {{-- <td>{{ $invoice->due_date }}</td> --}}
+
+
+                            <td>
+                                {{-- <a class="me-3" href="{{ route('invoiceUpdate',$invoice->id) }}">
+                                <img src="{{ asset('assets/img/icons/eye.svg')}}" alt="img">
+                                </a> --}}
+                                {{-- @can('invoice edit') --}}
+                                <a class="me-3" title="View PDF {{ $invoice->invoice_no }} " href="{{ route('invoice.download', $invoice->id) }}">
+                                    <img src="{{ asset('assets/img/icons/pdf.svg')}}" alt="img"></a>
+
+                                {{-- <a class="me-3" href="{{ route('invoiceEdit',$invoice->id) }}">
+                                    <img src="{{ asset('assets/img/icons/edit.svg')}}" alt="img">
+                                </a> --}}
+                                {{-- @endcan 
                                 @can('invoice delete') --}}
-                    <a class="confirm-text" href="{{ route('invoiceDestroy',$invoice->id) }}">
-                        <img src="{{ asset('assets/img/icons/delete.svg')}}" alt="img">
-                    </a>
-                    {{-- @endcan --}}
+                                <a class="confirm-text" href="{{ route('invoiceDestroy',$invoice->id) }}">
+                                    <img src="{{ asset('assets/img/icons/delete.svg')}}" alt="img">
+                                </a>
+                                {{-- @endcan --}}
 
-                </td>
-            </tr>
-            @endforeach
+                            </td>
+                        </tr>
+                        @endforeach
 
 
 
-        </tbody>
-    </table>
-</div>
-</div>
-</div>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
 
 </div>
 @endsection

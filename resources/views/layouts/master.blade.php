@@ -158,8 +158,8 @@
 <script>
 
 
-// Function to add event listeners to a row
-function addEventListenersToRow(row) {
+/* Function to add event listeners to a row
+//function addEventListenersToRow(row) {
     row.querySelector('.product-select').addEventListener('change', function(e) {
         let productId = e.target.value;
         let fetchUrl = getProductUrl.replace(':id', productId);
@@ -194,6 +194,79 @@ function addEventListenersToRow(row) {
 
     row.querySelector('.tax-input').addEventListener('change', function() {
         calculateTotal(row);
+    });
+}*/
+let selectedProductIds = new Set(); // Keep track of selected product IDs
+
+function addEventListenersToRow(row) {
+    const productSelect = row.querySelector('.product-select');
+
+    productSelect.addEventListener('change', function(e) {
+        let productId = e.target.value;
+
+        // Check if the product is already selected
+        if (selectedProductIds.has(productId)) {
+            // Clear the selection and show an alert
+                      Swal.fire({
+                title: 'Warning!',
+                text: 'This product is already selected in another row.',
+                icon: 'warning',
+                confirmButtonText: 'OK',
+                 customClass: {
+                    popup: 'custom-swal' // Add a custom class
+                }
+            });
+
+            productSelect.value = ''; // Clear the selection
+            return; // Exit the function
+        }
+
+        let fetchUrl = getProductUrl.replace(':id', productId);
+        fetch(fetchUrl)
+            .then(response => response.json())
+            .then(product => {
+                row.querySelector('.stock-input').removeAttribute('readonly');
+                row.querySelector('.stock-input').value = product.stock; // Set default stock
+
+                row.querySelector('.price-input').removeAttribute('readonly');
+                row.querySelector('.price-input').value = product.price;
+                row.querySelector('.name-input').value = product.name;
+
+                if (product.gst) {
+                    row.querySelector('.tax-input').removeAttribute('readonly');
+                    row.querySelector('.tax-input').value = product.gst;
+                }
+
+                calculateTotal(row); // Calculate total when product is selected
+            });
+
+        // Add the selected product ID to the Set
+        selectedProductIds.add(productId);
+    });
+
+    // Event listeners for price, stock, and tax
+    row.querySelector('.price-input').addEventListener('input', function() {
+        calculateTotal(row);
+    });
+
+    row.querySelector('.stock-input').addEventListener('input', function() {
+        calculateTotal(row);
+    });
+
+    row.querySelector('.tax-input').addEventListener('change', function() {
+        calculateTotal(row);
+    });
+
+    // Optional: Remove the product ID from the Set when the row is removed or reset
+    const resetButton = row.querySelector('.reset-button'); // Example button to reset the row
+    resetButton.addEventListener('click', function() {
+        let selectedId = row.querySelector('.product-select').value;
+        if (selectedId) {
+            selectedProductIds.delete(selectedId); // Remove the product ID from the Set
+        }
+        // Reset the row inputs if necessary
+        row.querySelector('.product-select').value = ''; // Reset product selection
+        // Reset other fields as needed...
     });
 }
 

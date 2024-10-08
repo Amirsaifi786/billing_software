@@ -76,6 +76,7 @@ class ItemController extends Controller
     public function update(Request $request, $id)
     {
         // Find the item by ID
+        // dd($request->all());
         $item = Product::find($id);
     
         // Validate the request data
@@ -96,18 +97,19 @@ class ItemController extends Controller
     
         // Save barcode as an image to the storage
         \Storage::put('public/barcodes/' . $barcode . '.png', $barcodeImage);
-    
         // Update item fields and calculate total
-        $item->update([
-            'name' => $request->name,
-            'product_type' => $request->type,
-            'barcode' => $barcode,
-            'description' => $request->description,
-            'stock' => $request->stock,
-            'price' => $request->price,
-            'total' => $request->stock * $request->price,
-            'barcode_image_path' => 'storage/barcodes/' . $barcode . '.png', // Save path to DB
-        ]);
+        // $item->update([
+
+        $item->name = $request->name ??  $item->name;
+        $item->product_type =$request->product_type ?? $item->product_type;
+        $item->barcode = $barcode??$item->barcode;
+        $item->description = $request->description??$item->description;
+        $item->stock = $request->stock ?? $item->stock;
+        $item->price = $request->price??$item->price;
+        $item->total = $request->stock * $request->price ?? $item->total;
+        $item->save();
+            // 'barcode_image_path' => 'storage/barcodes/' . $barcode . '.png', // Save path to DB
+        // ]);
     
         return redirect()->back()->with('success', 'Item updated successfully.');
     }

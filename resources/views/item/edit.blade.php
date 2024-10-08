@@ -3,8 +3,8 @@
 <div class="content">
     <div class="page-header">
         <div class="page-title">
-            <h4>item Management</h4>
-            <h6>Update item</h6>
+            <h4>Product Management</h4>
+            <h6>Update Product</h6>
         </div>
     </div>
 
@@ -21,7 +21,7 @@
                             <div class="col-lg-3 col-sm-6 col-12">
                                 <div class="form-group">
                                     <label for="name">Product Name<span class="text-danger">*</span></label>
-                                    <input type="text" class="form-control  @error('name') @enderror " id="name" name="name" value="{{ old('name',$items->name) }}" required>
+                                    <input type="text" class="form-control  @error('name') @enderror " id="name" name="name" value="{{ old('name',$items->name) }}" required oninput="generateBarcode()">
                                     @error('name')
                                     <span class="text-danger">{{ $message }}</span>
                                     @enderror
@@ -39,12 +39,10 @@
                             <div class="col-lg-3 col-sm-6 col-12">
                                 <div class="form-group">
                                     <label for="product_type">Item Type<span class="text-danger">*</span></label>
-                                    <select name="product_type" class="form-control" id="product_type" required>
+                                    <select name="product_type" class="form-control" id="product_type" required >
                                         <option disabled selected>Select Item Type</option>
-
                                         <option value="goods" {{ old('product_type', $items->product_type) == 'goods' ? 'selected' : '' }}>Goods</option>
                                         <option value="services" {{ old('product_type', $items->product_type) == 'services' ? 'selected' : '' }}>services</option>
-
                                     </select>
                                     @error('product_type')
                                     <span class="text-danger">{{ $message }}</span>
@@ -119,6 +117,16 @@
         const stock = document.getElementById('stock').value || 0;
         const price = document.getElementById('price').value || 0;
         document.getElementById('total').value = (stock * price).toFixed(2);
+    }
+        function generateBarcode() {
+        // Get the value of the product name
+        var productName = document.getElementById("name").value;
+
+        // Generate a simple barcode by replacing spaces with dashes and converting to uppercase
+        var barcode = productName.trim().toUpperCase().replace(/\s+/g, '-');
+
+        // Set the barcode field's value
+        document.getElementById("barcode").value = barcode;
     }
 
 </script>

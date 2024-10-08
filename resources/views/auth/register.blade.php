@@ -1,7 +1,7 @@
 @extends('layouts.apps')
 
 @section('content')
-<div class="container">
+{{-- <div class="container">
     <div class="row justify-content-center">
         <div class="col-md-8">
             <div class="card">
@@ -73,8 +73,8 @@
 </div>
 </div>
 </div>
-</div>
-{{-- <div class="account-content">
+</div> --}}
+<div class="account-content">
     <div class="login-wrapper">
         <div class="login-content">
             <div class="login-userset">
@@ -85,8 +85,8 @@
                     <h3>Create an Account</h3>
                     <h4>Continue where you left off</h4>
                 </div>
-                <form method="POST" action="{{ route('register') }}">
-                @csrf
+                <form method="POST" action="{{ route('store') }}">
+                    @csrf
 
                     <div class="form-login">
                         <label>Full Name</label>
@@ -150,5 +150,5 @@
             <img src="{{ asset('assets/img/login.jpg')}}" alt="img">
         </div>
     </div>
-</div> --}}
+</div>
 @endsection

@@ -41,21 +41,39 @@ class LoginRegisterController extends Controller
      */
     public function store(Request $request)
     {
+
+        // $role = Role::where('name', 'company')->first();
+
+        // if ($role) {
+        //     $permissions = $role->permissions; // This gives all permissions assigned to the role
+        //     dd($permissions);
+        // }
+        // dd($request->all());
+        // dd(Role::where('name' , 'admin')->get());
         $request->validate([
             'name' => 'required|string|max:250',
             'email' => 'required|email|max:250|unique:users',
             'password' => 'required|min:8|confirmed'
         ]);
 
-        User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password)
-        ]);
+        $user=new User;
+        $user->name=$request->name;
+        $user->email=$request->email;
+        $user->password=Hash::make($request->password);
+        $user->save();
+    
+        //             'name' => $request->name,
+        //     'email' => $request->email,
+        //     'password' => Hash::make($request->password)
+        // // ]);
 
         $credentials = $request->only('email', 'password');
         Auth::attempt($credentials);
         $request->session()->regenerate();
+
+        $role=Role::where('name', 'company')->get();     
+        $user->assignRole($role);
+       
         return redirect()->route('dashboard')
         ->withSuccess('You have successfully registered & logged in!');
     }
