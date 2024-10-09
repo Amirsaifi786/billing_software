@@ -161,9 +161,9 @@
                             <td>{{ $customer->gst_no }}</td>                            
                             <td>{{ $customer->remark }}</td>
                             <td>
-                                <a class="me-3" href="{{ route('customerUpdate',$customer->id) }}">
+                                {{-- <a class="me-3" href="{{ route('customerUpdate',$customer->id) }}">
                                     <img src="{{ asset('assets/img/icons/eye.svg')}}" alt="img">
-                                </a>
+                                </a> --}}
                                 {{-- @can('Customer edit') --}}
 
                                 <a class="me-3" href="{{ route('customerEdit',$customer->id) }}">
@@ -171,7 +171,7 @@
                                 </a>
                                 {{-- @endcan 
                                 @can('Customer delete') --}}
-                                <a class="confirm-text" href="{{ route('customerDestroy',$customer->id) }}">
+                                <a class="confirm-text delete_customer" data-id="{{ $customer->id }}">
                                     <img src="{{ asset('assets/img/icons/delete.svg')}}" alt="img">
                                 </a>
                                 {{-- @endcan --}}

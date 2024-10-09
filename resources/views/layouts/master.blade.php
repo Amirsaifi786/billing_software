@@ -20,6 +20,8 @@
     <link rel="stylesheet" href="{{ asset('assets/css/style.css')}}">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
     <link rel="stylesheet" href="{{ asset('assets/css/dataTables.bootstrap4.min.css')}}">
+
+ 
 </head>
 
 <body>
@@ -50,7 +52,7 @@
     </div>
     <!-- container-scroller -->
 
-<script src="{{ asset('assets/js/jquery-3.6.0.min.js') }}"></script>
+        <script src="{{ asset('assets/js/jquery-3.6.0.min.js') }}"></script>
         <script src="{{ asset('assets/js/feather.min.js') }}"></script>
         <script src="{{ asset('assets/js/jquery.slimscroll.min.js') }}"></script>
         <script src="{{ asset('assets/plugins/select2/js/custom-select.js') }}"></script>
@@ -105,20 +107,168 @@
                     }
                 });
             });
- $('.selectall').click(function() {
-        if ($(this).is(':checked')) {
-            $('input:checkbox').prop('checked', true);
-        } else {
-            $('input:checkbox').prop('checked', false);
-        }
-    });
-    $(".add, .edit, .delete").click(function() {
-        if ($(this).is(':checked')) {
-            $(this).parent().parent().find('.list').prop('checked', true);
-        } else {
-            $(".add, .edit, .delete").parent().parent().prop('checked', false);
-        }
-    });
+                   $(document).on("click", ".delete_product", function (e) {
+            e.preventDefault();
+            Swal.fire({
+                title: 'Are you sure?',
+                text: 'You want to Delete Product',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Yes',
+                cancelButtonText: 'No',
+                reverseButtons: true
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    var id = $(this).data('id');
+                    $.ajax({
+                        url: '{{ route('itemDestroy', ['id' => ':id']) }}'.replace(':id',
+                            id),
+                        type: "DELETE", // Use DELETE for delete operations
+                        data: {
+                            _token: '{{ csrf_token() }}'
+                        },
+                        dataType: 'json',
+
+                        success: function (response) {
+                                if (response.status === 'success') {
+                                Swal.fire(
+                                    'Success!',
+                                    response.message,
+                                    'success'
+                                );
+                                setTimeout(function () {
+                                        location.reload(); // Reload the page after a 1-second delay (1000ms)
+                                    }, 1000);
+                            
+
+                            }
+
+                                else {
+                                Swal.fire(
+                                    'Error!',
+                                    response.message,
+                                    'error'
+                                );
+                            }
+                        },
+                        
+                    });
+                }
+
+            });
+        });
+        $(document).on("click", ".delete_invoice", function (e) {
+            e.preventDefault();
+            Swal.fire({
+                title: 'Are you sure?',
+                text: 'You want to Delete Invoice',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Yes',
+                cancelButtonText: 'No',
+                reverseButtons: true
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    var id = $(this).data('id');
+                    $.ajax({
+                        url: '{{ route('invoiceDestroy', ['id' => ':id']) }}'.replace(':id',
+                            id),
+                        type: "DELETE", // Use DELETE for delete operations
+                        data: {
+                            _token: '{{ csrf_token() }}'
+                        },
+                        dataType: 'json',
+
+                        success: function (response) {
+                                if (response.status === 'success') {
+                                    Swal.fire(
+                                        'Success!',
+                                        response.message,
+                                        'success'
+                                    );
+                                    setTimeout(function () {
+                                            location.reload(); // Reload the page after a 1-second delay (1000ms)
+                                        }, 1000);
+                                
+
+                                }
+                                else {
+                                Swal.fire(
+                                    'Error!',
+                                    response.message,
+                                    'error'
+                                );
+                            }
+                        },
+                        
+                    });
+                }
+
+            });
+        });
+              $(document).on("click", ".delete_customer", function (e) {
+            e.preventDefault();
+            Swal.fire({
+                title: 'Are you sure?',
+                text: 'You want to Delete Customer',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Yes',
+                cancelButtonText: 'No',
+                reverseButtons: true
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    var id = $(this).data('id');
+                    $.ajax({
+                        url: '{{ route('customerDestroy', ['id' => ':id']) }}'.replace(':id',
+                            id),
+                        type: "DELETE", // Use DELETE for delete operations
+                        data: {
+                            _token: '{{ csrf_token() }}'
+                        },
+                        dataType: 'json',
+
+                        success: function (response) {
+                            if (response.status === 'success') {
+                                    Swal.fire(
+                                        'Success!',
+                                        response.message,
+                                        'success'
+                                    );
+                                    setTimeout(function () {
+                                            location.reload(); // Reload the page after a 1-second delay (1000ms)
+                                        }, 1000);
+                                
+
+                                }
+                                else {
+                                Swal.fire(
+                                    'Error!',
+                                    response.message,
+                                    'error'
+                                );
+                            }
+                        },
+                        
+                    });
+                }
+
+            });
+        });
+            $('.selectall').click(function() {
+                    if ($(this).is(':checked')) {
+                        $('input:checkbox').prop('checked', true);
+                    } else {
+                        $('input:checkbox').prop('checked', false);
+                    }
+                });
+                $(".add, .edit, .delete").click(function() {
+                    if ($(this).is(':checked')) {
+                        $(this).parent().parent().find('.list').prop('checked', true);
+                    } else {
+                        $(".add, .edit, .delete").parent().parent().prop('checked', false);
+                    }
+                });
 
             $('#country').on('change', function () {
             var countryId = this.value;
@@ -155,47 +305,16 @@
               });
     </script>
 
+
 <script>
 
 
-/* Function to add event listeners to a row
-//function addEventListenersToRow(row) {
-    row.querySelector('.product-select').addEventListener('change', function(e) {
-        let productId = e.target.value;
-        let fetchUrl = getProductUrl.replace(':id', productId);
-        fetch(fetchUrl)
-            .then(response => response.json())
-            .then(product => {
-                row.querySelector('.stock-input').removeAttribute('readonly');
-                row.querySelector('.stock-input').value = product.stock; // Set default stock
 
-                row.querySelector('.price-input').removeAttribute('readonly');
-                row.querySelector('.price-input').value = product.price;
-                row.querySelector('.name-input').value = product.name;
-             
 
-                   if (product.gst) {
-                row.querySelector('.tax-input').removeAttribute('readonly');
-                        row.querySelector('.tax-input').value = product.gst;
-                    }
+// Event listener for discount inputs
 
-                calculateTotal(row); // Calculate total when product is selected
-            });
-    });
 
-    // Event listeners for price, stock, and tax
-    row.querySelector('.price-input').addEventListener('input', function() {
-        calculateTotal(row);
-    });
-
-    row.querySelector('.stock-input').addEventListener('input', function() {
-        calculateTotal(row);
-    });
-
-    row.querySelector('.tax-input').addEventListener('change', function() {
-        calculateTotal(row);
-    });
-}*/
+/*
 let selectedProductIds = new Set(); // Keep track of selected product IDs
 
 function addEventListenersToRow(row) {
@@ -231,6 +350,8 @@ function addEventListenersToRow(row) {
                 row.querySelector('.price-input').removeAttribute('readonly');
                 row.querySelector('.price-input').value = product.price;
                 row.querySelector('.name-input').value = product.name;
+
+            
 
                 if (product.gst) {
                     row.querySelector('.tax-input').removeAttribute('readonly');
@@ -289,7 +410,7 @@ function calculateTotal(row) {
     row.querySelector('.total-input').value = total.toFixed(2);
     row.querySelector('.discountprice-input').value = discount.toFixed(2);
 }
-
+*/
 </script>
 
 

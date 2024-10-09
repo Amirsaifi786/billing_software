@@ -160,14 +160,15 @@ public function update( Request $request,$id)
     return redirect()->route('customerIndex')->with('success', 'Customer Update successfully!');
 
 }
-public function delete($id)
+public function destroy($id)
 {
     $customer = Customer::find($id);
     $customer->delete();
-    return redirect()->route('customerIndex')->with('success', 'Customer Update successfully!');
-
-
-
+  
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Customer deleted  successfully',
+        ]);
 }
 public function restoreAll()
 {

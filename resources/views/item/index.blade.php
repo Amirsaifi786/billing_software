@@ -175,9 +175,9 @@
                             <td>{{ $item->total }}</td>
                             <td> {!! DNS1D::getBarcodeHTML($item->barcode, 'C128') !!}
                             <td>
-                                <a class="me-3" href="{{ route('itemUpdate',$item->id) }}">
+                                {{-- <a class="me-3" href="{{ route('itemUpdate',$item->id) }}">
                                     <img src="{{ asset('assets/img/icons/eye.svg')}}" alt="img">
-                                </a>
+                                </a> --}}
                                 {{-- @can('item edit') --}}
 
                                 <a class="me-3" href="{{ route('itemEdit',$item->id) }}">
@@ -185,9 +185,10 @@
                                 </a>
                                 {{-- @endcan  --}}
                                 {{-- @can('item delete') --}}
-                                <a class="confirm-text" href="{{ route('itemDestroy',$item->id) }}">
+                                <a class="confirm-text delete_product " data-id="{{ $item->id }}">
                                     <img src="{{ asset('assets/img/icons/delete.svg')}}" alt="img">
                                 </a>
+
                                 {{-- {{-- @endcan --}}
 
                             </td>

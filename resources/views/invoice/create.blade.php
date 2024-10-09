@@ -182,6 +182,8 @@
             <form action="{{ route('invoiceStore') }}" method="POST" enctype="multipart/form-data">
                 @csrf
                 <div class="row">
+                            <input type="hidden" name="total_discount" id="total_discount">
+
  
              <div class="col-lg-4 col-sm-6 col-12 d-flex align-items-center">
     <div class="form-group flex-grow-1">
@@ -233,7 +235,38 @@
                 </div>
 
                 <button type="button" class="btn btn-success" style='margin-top:10px;margin-bottom:25px;' id="addProductRow">+ Add Product</button>
+                  
+                              <div class="total-order">
+    <ul>
+                <li>  
+                    <div class="col-lg-4">
+                        <label>Discount ₹</label>
+                        <input class="form-control" name="discountR" type="number" min="0" id="discountR">
+                    </div>
+                    <div class="col-lg-4" style="padding-left:30px;">
+                        <label>Discount %</label>
+                        <input class="form-control" name="discountP" type="number" max="100" min="0" id="discountP">
+                    </div>
+                    <div class="col-lg-4" style="padding-left:30px;">
+                        <label>Discount Amount</label>
+                        <input class="form-control" readonly name="discountA" type="number" id="discountA">
+                    </div>
+                </li>
+        {{-- <li>
+            <h4>Discount</h4>
+            <h5 id="displayDiscount">$ 0.00</h5>
+        </li> --}}
+        <li class="total">
+            <h4>Grand Total</h4>
+            <h5 id="displayGrandTotal">$ 0.00</h5>
+        </li>
+    </ul>
+</div>
 
+                                
+                            </div>
+                        </div>
+                      
                 <div class="row">
                     <div class="col-lg-12">
                         <button type="submit" class="btn btn-primary">Submit</button>
@@ -245,43 +278,190 @@
     </div>
 </div>
 <script>
-    // Define the URL for the get-product route
+ const getProductUrl = "{{ route('getProduct', ':id') }}"; 
 
-    const getProductUrl = "{{ route('getProduct', ':id') }}"; 
-    document.getElementById('addProductRow').addEventListener('click', function() {
-        let tableBody = document.querySelector('#productTable tbody');
-        let newRow = document.createElement('tr');
-
-        newRow.innerHTML = `
-        <td>
-            <select class="form-control product-select" name="product_id[]" required>
-                <option disabled selected>Select Product</option>
-                @foreach($allProducts as $product)
-                    <option value="{{ $product->id }}">{{ $product->name }}</option>
-                @endforeach
-            </select>
-        </td>
-        <input type="hidden" class="form-control name-input" name="name[]"  >
-        <input type="hidden" class="form-control discountprice-input" name="discountprice[]"  >
-        <td><input type="number" class="form-control price-input" name="price[]" readonly ></td>
-        <td><input type="number" class="form-control stock-input" name="stock[]" readonly min="1"></td>
-        <td>
-            <select class="form-control tax-input" name="tax[]" readonly required>
-                <option value="">0%</option>
-                <option value="5">5%</option>
-                <option value="8">8%</option>
-                <option value="12">12%</option>
-                <option value="18">18%</option>
-            </select>
-        </td>
-        <td><input type="number" class="form-control total-input" name="total[]" readonly></td>
-        <td><button type="button" class="btn btn-danger btn-sm removeRow">x</button></td>
+document.getElementById('addProductRow').addEventListener('click', function() {
+    let tableBody = document.querySelector('#productTable tbody');
+    let newRow = document.createElement('tr');
+    newRow.innerHTML = `
+    <td>
+        <select class="form-control product-select" name="product_id[]" required>
+            <option disabled selected>Select Product</option>
+            @foreach($allProducts as $product)
+                <option value="{{ $product->id }}">{{ $product->name }}</option>
+            @endforeach
+        </select>
+    </td>
+    <input type="hidden" class="form-control name-input" name="name[]"  >
+    <input type="hidden" class="form-control discountprice-input" name="discountprice[]"  >
+    <td><input type="number" class="form-control price-input" name="price[]" readonly></td>
+    <td><input type="number" class="form-control stock-input" name="stock[]" readonly min="1"></td>
+    <td>
+        <select class="form-control tax-input" name="tax[]" required>
+            <option value="">0%</option>
+            <option value="5">5%</option>
+            <option value="8">8%</option>
+            <option value="12">12%</option>
+            <option value="18">18%</option>
+        </select>
+    </td>
+    <td><input type="number" class="form-control total-input" name="total[]" readonly></td>
+    <td><button type="button" class="btn btn-danger btn-sm removeRow">x</button></td>
     `;
-        tableBody.appendChild(newRow);
+    tableBody.appendChild(newRow);
+    addEventListenersToRow(newRow);
+});
 
-        // Add event listeners for the new row's inputs
-        addEventListenersToRow(newRow);
+function addEventListenersToRow(row) {
+    const productSelect = row.querySelector('.product-select');
+    productSelect.addEventListener('change', function() {
+        const productId = this.value;
+
+        // Check for existing product in other rows
+        const allProductSelects = document.querySelectorAll('.product-select');
+        let productExists = false;
+
+        allProductSelects.forEach(select => {
+            if (select !== productSelect && select.value === productId) {
+                productExists = true; // Set flag if product is found
+            }
+        });
+
+        if (productExists) {
+            // Show SweetAlert if product already exists
+            Swal.fire({
+                icon: 'warning',
+                title: 'Product Already Exists',
+                text: 'This product is already selected in another row.',
+                confirmButtonText: 'OK'
+            });
+            productSelect.value = ''; // Reset the selection
+        } else {
+            // If product does not exist, fetch its details
+            fetchProductDetails(productId, row);
+        }
     });
+
+    const removeRowBtn = row.querySelector('.removeRow');
+    removeRowBtn.addEventListener('click', function() {
+        row.remove();
+        calculateGrandTotal(); // Recalculate total when a row is removed
+    });
+
+    // Event listeners for price, stock, and tax input changes
+    row.querySelector('.price-input').addEventListener('input', function() {
+        updateTotal(row);
+    });
+
+    row.querySelector('.stock-input').addEventListener('input', function() {
+        updateTotal(row);
+    });
+
+    row.querySelector('.tax-input').addEventListener('change', function() {
+        updateTotal(row);
+    });
+}
+
+
+function fetchProductDetails(productId, row) {
+    const url = getProductUrl.replace(':id', productId);
+
+
+    fetch(url)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(product => {
+            // Assign price and stock to inputs
+            row.querySelector('.price-input').removeAttribute('readonly');
+            row.querySelector('.price-input').value = product.price;
+
+            row.querySelector('.stock-input').removeAttribute('readonly');
+            row.querySelector('.stock-input').value = product.stock;
+
+            row.querySelector('.name-input').value = product.name;
+
+            if (product.gst) {
+                row.querySelector('.tax-input').value = product.gst;
+            }
+
+            updateTotal(row); // Update total after fetching product details
+
+            // Recalculate the grand total after fetching product details
+            calculateGrandTotal();
+        })
+        .catch(error => {
+            console.error('There was a problem with the fetch operation:', error);
+        });
+}
+
+// Function to update the total based on price, stock, and tax
+function updateTotal(row) {
+    const price = parseFloat(row.querySelector('.price-input').value) || 0;
+    const stock = parseInt(row.querySelector('.stock-input').value) || 0;
+    const taxRate = parseFloat(row.querySelector('.tax-input').value) || 0;
+
+    const subtotal = price * stock; // Calculate subtotal
+    const discount = subtotal * (taxRate / 100); // Calculate discount
+    const total = subtotal + discount; // Calculate total
+
+    row.querySelector('.total-input').value = total.toFixed(2); // Set total in the input
+    row.querySelector('.discountprice-input').value = discount.toFixed(2); // Set discount in the input
+
+    // Recalculate grand total
+    calculateGrandTotal();
+}
+
+// Calculate discount based on Discount ₹ or Discount %
+function calculateDiscount(subtotal) {
+    let discountR = parseFloat(document.getElementById('discountR').value) || 0;
+    let discountP = parseFloat(document.getElementById('discountP').value) || 0;
+
+    let discountA = 0;
+    if (discountR > 0) {
+        discountA = discountR; 
+        document.getElementById('discountP').value = ''; 
+    } else if (discountP > 0) {
+        discountA = (subtotal * discountP) / 100; 
+        document.getElementById('discountR').value = ''; 
+    }
+
+    document.getElementById('discountA').value = discountA.toFixed(2);
+    return discountA;
+}
+
+// Calculate the grand total
+function calculateGrandTotal() {
+    let totalRows = document.querySelectorAll('.total-input');
+    let grandTotal = 0;
+    
+    totalRows.forEach(function(row) {
+        grandTotal += parseFloat(row.value) || 0;
+    });
+
+    let discountA = calculateDiscount(grandTotal); // Pass the subtotal for discount calculation
+    grandTotal -= discountA; 
+
+    document.getElementById('displayGrandTotal').textContent = `$ ${grandTotal.toFixed(2)}`;
+    document.getElementById('total_discount').value=grandTotal;
+}
+
+// Event listeners for discount changes
+document.getElementById('discountR').addEventListener('input', function() {
+    calculateGrandTotal(); // Recalculate grand total when discountR changes
+});
+
+document.getElementById('discountP').addEventListener('input', function() {
+    calculateGrandTotal(); // Recalculate grand total when discountP changes
+});
+
+
+/*&
+
+   */
 
 </script>
 

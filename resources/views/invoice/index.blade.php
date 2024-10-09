@@ -83,23 +83,7 @@
                             <th>Customer Id</th>
                             <th>Invoice No </th>
                             <th>Invoice Date </th>
-                            <th>Invoice total </th>
-
-                            {{-- <th>Product Id</th>
-                {{-- <th>Price</th>
-                <th>Quantity </th>
-                <th>Discount Type</th>
-                <th>Total Amount</th> --}}
-                            {{--
-
-                            <th>Zip_code</th>
-                            <th>Tax_identification_no</th>
-                            <th>Account_type</th>
-                            <th>Opening_balance</th>
-                            <th>Document_no</th>
-                            <th>Credit_allowed</th>
-                            <th>Remark</th>
-                            <th>Avatar</th> --}}
+                            <th>Invoice total </th>            
                             <th>Action</th>
 
                         </tr>
@@ -121,29 +105,27 @@
                             <td>{{ $invoice->invoice_no }}</td>
                             <td>{{ $invoice->invoice_date }}</td>
                             <td>{{ $invoice->total_amount }}</td>
-                            {{-- <td>{{ $invoice->product_id }}</td>
+                      
 
-                            <td>{{ $invoice->price }}</td>
-                            <td>{{ $invoice->quantity }}</td>
-                            <td>{{ $invoice->discount_type }}%</td>
-                            <td>{{ $invoice->total_amount }}</td> --}}
-                            {{-- <td>{{ $invoice->due_date }}</td> --}}
 
 
                             <td>
-                                {{-- <a class="me-3" href="{{ route('invoiceUpdate',$invoice->id) }}">
-                                <img src="{{ asset('assets/img/icons/eye.svg')}}" alt="img">
-                                </a> --}}
+                             
                                 {{-- @can('invoice edit') --}}
                                 <a class="me-3" title="View PDF {{ $invoice->invoice_no }} " href="{{ route('invoice.download', $invoice->id) }}">
-                                    <img src="{{ asset('assets/img/icons/pdf.svg')}}" alt="img"></a>
+                                    <img src="{{ asset('assets/img/icons/pdf.svg')}}" alt="img">
+                                </a>
 
                                 {{-- <a class="me-3" href="{{ route('invoiceEdit',$invoice->id) }}">
                                     <img src="{{ asset('assets/img/icons/edit.svg')}}" alt="img">
                                 </a> --}}
                                 {{-- @endcan 
                                 @can('invoice delete') --}}
-                                <a class="confirm-text" href="{{ route('invoiceDestroy',$invoice->id) }}">
+                                {{-- <a class="confirm-text delete_invoice" data-id="{{ $invoice->id }}">
+                                    <img src="{{ asset('assets/img/icons/delete.svg')}}" alt="img">
+                                </a> --}}
+                             
+                                 <a class="confirm-text delete_invoice" data-id="{{ $invoice->id }}">
                                     <img src="{{ asset('assets/img/icons/delete.svg')}}" alt="img">
                                 </a>
                                 {{-- @endcan --}}

@@ -125,6 +125,7 @@ class InvoiceController extends Controller
 public function Store(Request $request)
 {
     // Generate a new invoice number
+  
     $lastInvoice = Invoice::orderBy('id', 'desc')->first();
     
     if ($lastInvoice) {
@@ -138,6 +139,7 @@ public function Store(Request $request)
     $validated = $request->validate([
         'customer_id' => 'required',
         'invoice_date' => 'required|date',
+  
     ]);
 
     // Initialize total amount and total GST
@@ -158,6 +160,8 @@ public function Store(Request $request)
     $invoice->customer_id = $validated['customer_id'];
     $invoice->invoice_no = $newInvoiceNo;
     $invoice->invoice_date = $validated['invoice_date'];
+
+
     // We'll calculate total_amount and total_gst later
     $invoice->save(); // Save the invoice to generate its ID
 
@@ -178,10 +182,21 @@ public function Store(Request $request)
         $totalAmount += $totals[$i]; // Sum of all product totals
         $totalGST += ($prices[$i] * $stocks[$i]) * ($taxes[$i] / 100); // Calculate GST for each product and sum it up
     }
+    $invoice->discountP = $request->input('discountP');
+    $invoice->discountR = $request->input('discountR');
 
-    // Update the invoice with total amount and total GST
-    $invoice->total_gst = $totalGST; // Save total GST
+    $invoice->discountA = $request->input('discountA');
+    $disA=$request->input('discountA');
+if ($disA!=null) { 
+    $invoice->total_amount = $totalAmount-$disA; // Save total amount
+}
+else
+{
     $invoice->total_amount = $totalAmount; // Save total amount
+    
+}
+// Update the invoice with total amount and total GST
+    $invoice->total_gst = $totalGST;
     $invoice->save(); // Update the invoice with these values
 
     // Redirect back with success message
@@ -261,7 +276,11 @@ public function downloadInvoice($id)
         $invoice=Invoice::find($id);
         $invoice->delete();
 
-        return redirect()->back()->with('success','Invoice Deleted Successfully');
-        
+        // return redirect()->back()->with('success','Invoice Deleted Successfully');
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Product deleted  successfully',
+        ]);
     }
 }

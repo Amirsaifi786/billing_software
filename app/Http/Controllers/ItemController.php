@@ -121,6 +121,10 @@ class ItemController extends Controller
     {
         $item=Product::find($id);
         $item->delete();
-        return redirect()->back()->with('success', 'Item deleted  successfully ');
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Product deleted  successfully',
+        ]);
+        
     }
 }

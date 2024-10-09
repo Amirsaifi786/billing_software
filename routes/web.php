@@ -40,14 +40,15 @@ Route::group(['middleware' => ['auth']], function() {
     Route::post('/customer/store', [CustomerController::class,'store'])->name('customerStore');
     Route::get('/customer/edit/{id}', [CustomerController::class,'edit'])->name('customerEdit');
     Route::post('/customer/Update/{id}', [CustomerController::class,'update'])->name('customerUpdate');
-    Route::get('/customer/delete/{id}', [CustomerController::class,'delete'])->name('customerDestroy');
-    // ITEM  ROUTES
+    Route::delete('/customer/delete/{id}', [CustomerController::class,'destroy'])->name('customerDestroy');
+    // PRODUCT  ROUTES
     Route::get('/product',[ItemController::class,'index'])->name('itemIndex');
     Route::get('/product/create', [ItemController::class,'create'])->name('itemCreate');
     Route::post('/product/store', [ItemController::class,'store'])->name('itemStore');
     Route::get('/product/edit/{id}', [ItemController::class,'edit'])->name('itemEdit');
     Route::post('/product/Update/{id}', [ItemController::class,'update'])->name('itemUpdate');
-    Route::get('/product/delete/{id}', [ItemController::class,'destroy'])->name('itemDestroy');
+    Route::delete('/product/delete/{id}', [ItemController::class, 'destroy'])->name('itemDestroy');
+
 
 //  INVOICE ROUTES
     Route::get('/invoice',[InvoiceController::class,'index'])->name('invoiceIndex');
@@ -56,8 +57,9 @@ Route::group(['middleware' => ['auth']], function() {
     Route::post('/invoice/create', [CustomerController::class,'customerstore'])->name('invcustomerStore');
     Route::get('/invoice/edit/{id}', [InvoiceController::class,'edit'])->name('invoiceEdit');
     Route::post('/invoice/Update/{id}', [InvoiceController::class,'update'])->name('invoiceUpdate');
-    Route::get('/invoice/delete/{id}', [InvoiceController::class,'destroy'])->name('invoiceDestroy');
+    Route::delete('/invoice/delete/{id}', [InvoiceController::class,'destroy'])->name('invoiceDestroy');
     Route::get('/download-invoice/{id}', [InvoiceController::class, 'downloadInvoice'])->name('invoice.download');
+    Route::get('/get-product/{id}', [InvoiceController::class, 'getProduct'])->name('getProduct'); // For AJAX
 
    
 
@@ -73,7 +75,6 @@ Route::group(['middleware' => ['auth']], function() {
         return redirect()->back()->with('success', 'All invoice have been restored.');
     })->name('invoice.restoreAll');
 
-  Route::get('/get-product/{id}', [InvoiceController::class, 'getProduct'])->name('getProduct'); // For AJAX
 
 
     
