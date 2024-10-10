@@ -49,7 +49,7 @@
                                     @enderror
                                 </div>
                             </div>
-                            <div class="col-lg-3 col-sm-6 col-12">
+                            {{-- <div class="col-lg-3 col-sm-6 col-12">
                                 <div class="form-group">
                                     <label for="barcode">Barcode<span class="text-danger">*</span></label>
                                     <input type="text" name="barcode" class="form-control  @error('barcode') is-invalid @enderror " id="barcode" value="{{ old('barcode',$items->barcode) }}" required>
@@ -60,7 +60,7 @@
                                     
                                     {!! DNS1D::getBarcodeHTML($items->barcode, 'C128') !!}</div>
                                 </div>
-                            </div>
+                            </div> --}}
 
                             <div class="col-lg-3 col-sm-6 col-12">
 

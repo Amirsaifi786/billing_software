@@ -1,10 +1,25 @@
 @extends('layouts.master')
 @section('content')
-@if ($message = Session::get('message'))
+{{-- @if ($message = Session::get('message'))
 <div class="alert alert-success alert-block">
     <button type="button" class="close" data-dismiss="alert">×</button>
     <strong>{{ $message }}</strong>
 </div>
+@endif --}}
+@if(session('success'))
+    <div id="successMessage" class="alert alert-success">
+        {{ session('success') }}
+    </div>
+
+    <script>
+        // Hide the success message after 2 seconds (2000 milliseconds)
+        setTimeout(function() {
+            var successMessage = document.getElementById('successMessage');
+            if (successMessage) {
+                successMessage.style.display = 'none';
+            }
+        }, 2000); // 2 seconds
+    </script>
 @endif
 <style>
 .small-avatar {
@@ -53,6 +68,14 @@
                         </li>
                         <li>
                             <a data-bs-toggle="tooltip" data-bs-placement="top" title="print"><img src="{{ asset('assets/img/icons/printer.svg')}}" alt="img"></a>
+                        </li>
+                          <li>
+                      <form id="delete-form" action="{{ route('customerdeleteAll') }}" method="POST">
+                                @csrf
+                                <button class="btn btn-primary"  type="submit" title="Delete Selected">Delete All
+                                    {{-- <img src="{{ asset('assets/img/icons/delete.svg') }}" alt="Delete"> --}}
+                                </button>
+                            </form>
                         </li>
                     </ul>
                 </div>
@@ -122,7 +145,7 @@
                         <tr>
                             <th>
                                 <label class="checkboxs">
-                                    <input type="checkbox" id="select-all">
+                                    <input type="checkbox" name="checkbox[]" id="select-all">
                                     <span class="checkmarks"></span>
                                 </label>
                             </th>
@@ -145,8 +168,8 @@
 
                         <tr>
                             <td>
-                                <label class="checkboxs">
-                                    <input type="checkbox">
+                                 <label class="checkboxs">
+                                    <input type="checkbox" name="checkbox[]" value="{{ $customer->id }}">
                                     <span class="checkmarks"></span>
                                 </label>
                             </td>
@@ -189,4 +212,46 @@
     </div>
 
 </div>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const selectAllCheckbox = document.getElementById('select-all');
+        const checkboxes = document.querySelectorAll('input[name="checkbox[]"]');
+        const form = document.getElementById('delete-form');
+
+        // Toggle select all checkboxes
+        selectAllCheckbox.addEventListener('change', function () {
+            checkboxes.forEach(function (checkbox) {
+                checkbox.checked = selectAllCheckbox.checked;
+            });
+        });
+
+        // Handle form submission
+        form.addEventListener('submit', function (event) {
+            const selectedCheckboxes = Array.from(checkboxes)
+                .filter(checkbox => checkbox.checked)
+                .map(checkbox => checkbox.value); // Get checked values
+
+            if (selectedCheckboxes.length === 0) {
+                event.preventDefault(); // Prevent form submission if no checkbox is selected
+           
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'No Selection',
+                    text: 'Please select at least one customer to delete.',
+                    confirmButtonText: 'OK',
+                    confirmButtonColor: '#3085d6'
+                });            } else {
+                // Attach selected checkbox values as hidden inputs to form
+                selectedCheckboxes.forEach(function (value) {
+                    const hiddenInput = document.createElement('input');
+                    hiddenInput.type = 'hidden';
+                    hiddenInput.name = 'checkbox[]';
+                    hiddenInput.value = value;
+                    form.appendChild(hiddenInput);
+                });
+            }
+        });
+    });
+</script>
+
 @endsection

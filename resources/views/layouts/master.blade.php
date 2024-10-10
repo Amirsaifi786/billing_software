@@ -206,7 +206,55 @@
 
             });
         });
-              $(document).on("click", ".delete_customer", function (e) {
+        $(document).on("click", ".delete_user", function (e) {
+            e.preventDefault();
+            Swal.fire({
+                title: 'Are you sure?',
+                text: 'You want to Delete user',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Yes',
+                cancelButtonText: 'No',
+                reverseButtons: true
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    var id = $(this).data('id');
+                    $.ajax({
+                        url: '{{ route('userDestroy', ['id' => ':id']) }}'.replace(':id',
+                            id),
+                        type: "DELETE", // Use DELETE for delete operations
+                        data: {
+                            _token: '{{ csrf_token() }}'
+                        },
+                        dataType: 'json',
+
+                        success: function (response) {
+                            if (response.status === 'success') {
+                                    Swal.fire(
+                                        'Success!',
+                                        response.message,
+                                        'success'
+                                    );
+                                    setTimeout(function () {
+                                            location.reload(); // Reload the page after a 1-second delay (1000ms)
+                                        }, 1000);                               
+
+                                }
+                                else {
+                                Swal.fire(
+                                    'Error!',
+                                    response.message,
+                                    'error'
+                                );
+                            }
+                        },
+                        
+                    });
+                }
+
+            });
+        });
+           $(document).on("click", ".delete_customer", function (e) {
             e.preventDefault();
             Swal.fire({
                 title: 'Are you sure?',
@@ -237,8 +285,7 @@
                                     );
                                     setTimeout(function () {
                                             location.reload(); // Reload the page after a 1-second delay (1000ms)
-                                        }, 1000);
-                                
+                                        }, 1000);                               
 
                                 }
                                 else {

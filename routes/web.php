@@ -6,6 +6,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\ItemController;
+use App\Http\Controllers\GstController;
 use App\Http\Controllers\Auth\LoginRegisterController;
 use App\Http\Controllers\InvoiceController;
 use App\Models\Product;
@@ -35,12 +36,23 @@ Route::group(['middleware' => ['auth']], function() {
 
     // CUSTOME ROUTES 
 
+    Route::get('/gst', function () {
+        return view('invoice.gst_form'); // Create this view for input
+    })->name('gst.form');
+    
+    Route::post('/fetch-gst', [GstController::class, 'fetch'])->name('fetch.gst');
+    
     Route::get('/customer',[CustomerController::class,'index'])->name('customerIndex');
     Route::get('/customer/create', [CustomerController::class,'create'])->name('customerCreate');
     Route::post('/customer/store', [CustomerController::class,'store'])->name('customerStore');
     Route::get('/customer/edit/{id}', [CustomerController::class,'edit'])->name('customerEdit');
     Route::post('/customer/Update/{id}', [CustomerController::class,'update'])->name('customerUpdate');
     Route::delete('/customer/delete/{id}', [CustomerController::class,'destroy'])->name('customerDestroy');
+
+    Route::post('/customer/deleteall', [CustomerController::class,'deleteAll'])->name('customerdeleteAll');
+    Route::post('/invoice/deleteall', [InvoiceController::class,'deleteAll'])->name('invoicedeleteAll');
+    Route::post('/product/deleteall', [ItemController::class,'deleteAll'])->name('productdeleteAll');
+
     // PRODUCT  ROUTES
     Route::get('/product',[ItemController::class,'index'])->name('itemIndex');
     Route::get('/product/create', [ItemController::class,'create'])->name('itemCreate');
@@ -99,7 +111,9 @@ Route::group(['middleware' => ['auth']], function() {
     Route::get('admin/user/show/{id}', [UserController::class, 'show'])->name('userShow');
     Route::get('admin/user/edit/{id}',[UserController::class,'edit'])->name('userEdit');
     Route::PATCH('admin/user/update/{id}',[UserController::class,'update'])->name('userUpdate');
-    Route::get('admin/user/destroy/{id}',[UserController::class,'destroy'])->name('userDestroy');
+    Route::delete('/user/delete/{id}',[UserController::class,'destroy'])->name('userDestroy');
+    Route::get('/user/restore', [UserController::class, 'restoreAll'])->name('user.restoreAll');
+
     
     Route::get('admin/role/index', [RoleController::class,'index'])->name('roleIndex');
     Route::get('/admin/role/create', [RoleController::class,'create'])->name('roleCreate');

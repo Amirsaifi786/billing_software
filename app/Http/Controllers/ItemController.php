@@ -4,9 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Models\Item;
 use App\Models\Product;
-use Milon\Barcode\DNS1D;
+// use Milon\Barcode\DNS1D;
+use Milon\Barcode\Facades\DNS1DFacade as DNS1D;
 use Illuminate\Http\Request;
-
+use Str;
 class ItemController extends Controller
 {
 
@@ -27,28 +28,44 @@ class ItemController extends Controller
     /**
      * Store a newly created resource in storage.
      */
+
+
+
+private function generateUniqueBarcode()
+{
+    do {
+        $barcode = strtoupper(Str::random(8)); // Generate a random 8-character unique barcode
+    } while (Product::where('barcode', $barcode)->exists());
+
+    return $barcode;
+}
+
     public function store(Request $request)
 {
+    $barcode = $this->generateUniqueBarcode();
 
-   
+    $barcodeImage = DNS1D::getBarcodePNG($barcode, 'C128');
+    $imagePath = 'public/images/' . $barcode . '.png';
+    \Storage::put($imagePath, $barcodeImage);
     // Generate the barcode PNG
-    $barcode = $request->input('barcode');
-    $barcodeImage = DNS1D::getBarcodePNGPath($barcode, 'C128');
-    \Storage::put('public/images/' . $barcode . '.png', file_get_contents($barcodeImage));
+    // $barcode = $request->input('barcode');
+    // $barcodeImage = DNS1D::getBarcodePNGPath($barcode, 'C128');
+    // \Storage::put('public/images/' . $barcode . '.png', file_get_contents($barcodeImage));
+    // 'product_code' => $request->product_code,
+    $product=new Product;
+    $product->name = $request->name;
+    $product->product_type = $request->type;
+    $product->barcode = $barcode;
+    $product->stock = $request->stock;
+    $product->description = $request->description;
+    $product->price = $request->price;
+    $product->gst = $request->gst;
+    $product->total = $request->total;
+    // $product->barcode_image_path = 'storage/barcodes/' . $barcode . '.png';
+    $product->save();
 
-    Product::create([
-        'name' => $request->name,
-        'product_type' => $request->type,
-        'barcode' => $barcode,
-        'stock' => $request->stock,
-        'description' => $request->description,
-        'price' => $request->price,
-        'gst' => $request->gst,
-        'total' => $request->total,
-        'barcode_image_path' => 'storage/barcodes/' . $barcode . '.png'
-    ]);
+    return redirect()->route('itemIndex')->with('success', 'Item Create successfully.');
 
-    return redirect()->back()->with('success', 'Invoice item added successfully.');
 }
 
     /**
@@ -62,6 +79,21 @@ class ItemController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
+    public function deleteAll(Request $request)
+{
+    $selectedIds = $request->input('checkbox', []);
+
+    if (count($selectedIds) > 0) {
+        // Perform deletion logic here
+        Product::whereIn('id', $selectedIds)->delete();
+
+        return redirect()->back()->with('success', 'Selected Product deleted successfully.');
+    }
+
+    return redirect()->back()->with('error', 'No Product were selected.');
+}
+
+
     public function edit($id)
     {
         $items=Product::find($id);
@@ -91,18 +123,15 @@ class ItemController extends Controller
         // ]);
     
         // Generate barcode PNG using instance of DNS1D
-        $barcode = $request->input('barcode');
-        $barcodeGenerator = new DNS1D(); // Create an instance of DNS1D
-        $barcodeImage = $barcodeGenerator->getBarcodePNG($barcode, 'C128'); // Generate barcode PNG
-    
-        // Save barcode as an image to the storage
-        \Storage::put('public/barcodes/' . $barcode . '.png', $barcodeImage);
-        // Update item fields and calculate total
-        // $item->update([
-
+        // $barcode = $request->input('barcode');
+        // $barcodeGenerator = new DNS1D(); // Create an instance of DNS1D
+        // $barcodeImage = $barcodeGenerator->getBarcodePNG($barcode, 'C128'); // Generate barcode PNG
+        // \Storage::put('public/barcodes/' . $barcode . '.png', $barcodeImage);
+        
+            
         $item->name = $request->name ??  $item->name;
         $item->product_type =$request->product_type ?? $item->product_type;
-        $item->barcode = $barcode??$item->barcode;
+        // $item->barcode = $barcode??$item->barcode;
         $item->description = $request->description??$item->description;
         $item->stock = $request->stock ?? $item->stock;
         $item->price = $request->price??$item->price;
@@ -111,7 +140,8 @@ class ItemController extends Controller
             // 'barcode_image_path' => 'storage/barcodes/' . $barcode . '.png', // Save path to DB
         // ]);
     
-        return redirect()->back()->with('success', 'Item updated successfully.');
+        // return redirect()->back()->with('success', 'Item updated successfully.');
+        return redirect()->route('itemIndex')->with('success', 'Item updated successfully.');
     }
 
     /**

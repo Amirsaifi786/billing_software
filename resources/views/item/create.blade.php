@@ -25,6 +25,15 @@
                                 @enderror
                             </div>
                         </div>
+                          {{-- <div class="col-lg-3 col-sm-6 col-12">
+                            <div class="form-group">
+                                <label for="product_code">Product Code<span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="product_code" placeholder="PRD-001" name="product_code" value="{{ old('product_code') }}"  >
+                                @error("product_code")
+                                <span class="text-danger">{{ $message }}</span>
+                                @enderror
+                            </div>
+                        </div> --}}
                         <div class="col-lg-3 col-sm-6 col-12">
                             <div class="form-group">
                                 <label for="description">Description<span class="text-danger">*</span></label>

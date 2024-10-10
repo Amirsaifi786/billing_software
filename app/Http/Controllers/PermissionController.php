@@ -24,8 +24,8 @@ class PermissionController extends Controller
     {
 
         
-        $table_length = $request->table_length != '' ? $request->table_length : 10;
-        $permissions = Permission::latest()->paginate($table_length);
+        // $table_length = $request->table_length != '' ? $request->table_length : 10;
+        $permissions = Permission::all();
     
         
         return view('permission-manager.index', compact('permissions'));

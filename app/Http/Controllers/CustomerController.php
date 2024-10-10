@@ -103,7 +103,8 @@ public function customerstore(Request  $request)
     $customer->date_of_birth = $request->date_of_birth; 
     $customer->remark = $request->remark;
     $customer->save();
-    return redirect()->back()->with('success' ,'customer create successfully');
+    return redirect()->route('customerIndex')->with('success', 'Customer Create successfully!');
+
 }
 public function update( Request $request,$id)
 {
@@ -159,6 +160,7 @@ public function update( Request $request,$id)
 
     return redirect()->route('customerIndex')->with('success', 'Customer Update successfully!');
 
+
 }
 public function destroy($id)
 {
@@ -176,6 +178,20 @@ public function restoreAll()
     Customer::onlyTrashed()->restore();
     return redirect()->back()->with('success', 'All customers have been restored.');
 }
+public function deleteAll(Request $request)
+{
+    $selectedIds = $request->input('checkbox', []);
+
+    if (count($selectedIds) > 0) {
+        // Perform deletion logic here
+        Customer::whereIn('id', $selectedIds)->delete();
+
+        return redirect()->back()->with('success', 'Selected customers deleted successfully.');
+    }
+
+    return redirect()->back()->with('error', 'No customers were selected.');
+}
+
 
 
 

@@ -1,10 +1,25 @@
 @extends('layouts.master')
 @section('content')
-@if ($message = Session::get('message'))
+{{-- @if ($message = Session::get('message'))
 <div class="alert alert-success alert-block">
     <button type="button" class="close" data-dismiss="alert">×</button>
     <strong>{{ $message }}</strong>
 </div>
+@endif --}}
+@if(session('success'))
+    <div id="successMessage" class="alert alert-success">
+        {{ session('success') }}
+    </div>
+
+    <script>
+        // Hide the success message after 2 seconds (2000 milliseconds)
+        setTimeout(function() {
+            var successMessage = document.getElementById('successMessage');
+            if (successMessage) {
+                successMessage.style.display = 'none';
+            }
+        }, 2000); // 2 seconds
+    </script>
 @endif
 <div class="content">
 
@@ -167,7 +182,7 @@
 
                                 @can('User delete')
 
-                                <a class="confirm-text" href="{{ route('userDestroy', $user->id) }}">
+                                <a class="confirm-text delete_user" data-id="{{ $user->id }}" >
                                     <img src="{{ asset('assets/img/icons/delete.svg')}}" alt="img">
                                 </a>
                                 @endcan

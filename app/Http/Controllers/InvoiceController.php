@@ -200,7 +200,8 @@ else
     $invoice->save(); // Update the invoice with these values
 
     // Redirect back with success message
-    return redirect()->route('invoiceIndex')->with('success', 'Invoice saved successfully');
+    return redirect()->route('invoiceIndex')->with('success', 'Invoice Create Successfully.');
+
 }
 
 
@@ -265,10 +266,25 @@ public function downloadInvoice($id)
         $inv->discount_type=$request->discount_type;
         $inv->total_amount=$request->total_amount;
         $inv->save();
-        return redirect()->back()->with('success','Invoice Updated Successfully');
+        return redirect()->route('invoiceIndex')->with('success', 'Invoice Updated Successfully.');
+        
+
 
     }
 
+    public function deleteAll(Request $request)
+{
+    $selectedIds = $request->input('checkbox', []);
+
+    if (count($selectedIds) > 0) {
+        // Perform deletion logic here
+        Invoice::whereIn('id', $selectedIds)->delete();
+
+        return redirect()->back()->with('success', 'Selected Invoice deleted successfully.');
+    }
+
+    return redirect()->back()->with('error', 'No customers were selected.');
+}
    
     public function destroy($id)
     {
